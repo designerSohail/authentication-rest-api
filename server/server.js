@@ -14,6 +14,8 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
+
+// POST Routes
 app.post('/todos', (req, res) => {
   var todo = new Todo({
     text: req.body.text
@@ -26,6 +28,21 @@ app.post('/todos', (req, res) => {
   });
 });
 
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password'])
+  var user = new User(body)
+
+  user.save().then(() => {
+    return user.generateAuthTokens()
+  }).then(token => {
+    res.header('x-auth', token).send(user)
+  }).catch(err => {
+    res.status(400).send('An Erro Occured ' + err)
+  })
+})
+
+
+// GET Routes
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});
@@ -52,6 +69,7 @@ app.get('/todos/:id', (req, res) => {
   });
 });
 
+// DELETE Routes
 app.delete('/todos/:id', (req, res) => {
   var id = req.params.id;
 
@@ -70,6 +88,8 @@ app.delete('/todos/:id', (req, res) => {
   });
 });
 
+
+// PATCH Routes
 app.patch('/todos/:id', (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
