@@ -9,7 +9,7 @@ var authenticate = (req, res, next) => {
     req.token = token
     next()
   }).catch(e => {
-    res.send(401).send('Authentication Error' + e)
+    res.sendStatus(401).send('Authentication Error' + e)
   })
 }
 module.exports = {authenticate}
